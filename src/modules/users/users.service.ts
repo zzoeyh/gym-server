@@ -29,6 +29,7 @@ export class UsersService {
       where: {
         id,
       },
+      // attributes: ['id', 'username', 'email'], // 指定要返回的键
     });
   }
   findOneByUsername(username: string): Promise<User> {

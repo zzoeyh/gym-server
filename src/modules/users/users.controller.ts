@@ -11,11 +11,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.model';
 import { UsersService } from './users.service';
 import { Public } from '../auth/decorators/public.decorator';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+@ApiTags('User') // 为控制器类添加标签
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Public() // 使用 IS_PUBLIC_KEY 装饰器来跳过授权验证
+  @ApiOperation({ summary: '注册' }) // 为方法添加操作介绍
+  @ApiBody({ description: '注册' }) // 为请求体添加介绍
+  @ApiResponse({
+    status: 200,
+    description: '注册成功',
+  }) // 添加响应介绍
   @Post('register')
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
