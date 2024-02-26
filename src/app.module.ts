@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { RoleModule } from './modules/role/role.module';
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -16,6 +18,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     AuthModule,
     UsersModule,
+    RoleModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

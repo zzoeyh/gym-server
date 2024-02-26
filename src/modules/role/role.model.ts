@@ -1,7 +1,10 @@
 import { DataTypes } from 'sequelize';
-import { Table, Column, Model } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany } from 'sequelize-typescript';
+import { User } from '../users/user.model';
 
-@Table
+@Table({
+  tableName: 'role',
+})
 export class Role extends Model<Role> {
   @Column({ primaryKey: true, allowNull: false, type: DataTypes.STRING })
   id: string;
@@ -13,8 +16,11 @@ export class Role extends Model<Role> {
   description: string;
 
   @Column
-  createAt: Date;
+  createdAt: Date;
 
   @Column
-  updateAt: Date;
+  updatedAt: Date;
+
+  @HasMany(() => User)
+  users: User[];
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './models/user.model';
+import { User } from './user.model';
+import { Role } from '../role/role.model';
 
 @Injectable()
 export class UsersService {
@@ -10,8 +11,10 @@ export class UsersService {
     private readonly userModel: typeof User,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const id = await this.generateUniqueStringId(); // 调用生成函数来设置主键值
     return this.userModel.create({
+      id,
       username: createUserDto.username,
       password: createUserDto.password,
     });
@@ -21,7 +24,7 @@ export class UsersService {
     return this.userModel.findAll();
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: string): Promise<User> {
     return this.userModel.findOne({
       where: {
         id,
@@ -35,8 +38,33 @@ export class UsersService {
       },
     });
   }
-  async remove(id: number): Promise<void> {
+  /**
+   * 查询detail
+   **/
+  getUserDetail(id: string): Promise<User> {
+    return this.userModel.findOne({
+      where: {
+        id,
+      },
+      include: Role,
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'], // 显式排除 createdAt 和 updatedAt 字段
+      },
+    });
+  }
+  async remove(id: string): Promise<void> {
     const user = await this.findOne(id);
     await user.destroy();
+  }
+  /**
+   * 生成唯一的字符串 ID 的函数
+   * */
+  async generateUniqueStringId(): Promise<string> {
+    const userList = await this.findAll();
+    if (!userList.length) {
+      return String(202111701112);
+    } else {
+      return String(Number(userList[userList.length - 1].id) + 1);
+    }
   }
 }
