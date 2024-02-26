@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.model';
@@ -52,6 +52,19 @@ export class UsersService {
         exclude: ['createdAt', 'updatedAt'], // 显式排除 createdAt 和 updatedAt 字段
       },
     });
+  }
+
+  async update(id: string, updatedUser: CreateUserDto): Promise<void> {
+    try {
+      await this.userModel.update(updatedUser, {
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      // 在这里可以根据具体情况抛出自定义的异常
+      throw new NotFoundException('更新用户信息失败,请检查输入的字段');
+    }
   }
   async remove(id: string): Promise<void> {
     const user = await this.findOne(id);

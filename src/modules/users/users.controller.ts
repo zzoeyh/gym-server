@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   NotFoundException,
+  Put,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.model';
@@ -63,7 +64,18 @@ export class UsersController {
     }
     return user;
   }
-  @Delete(':id')
+
+  @ApiOperation({ summary: 'Update user information' }) // 为方法添加操作介绍
+  @ApiBody({ type: CreateUserDto }) // 为请求体添加介绍
+  @ApiResponse({
+    status: 200,
+    description: 'User information updated successfully',
+  }) // 添加响应介绍
+  @Put('/update/:id') // 使用 PUT 请求来处理更新用户信息
+  update(@Param('id') id: string, @Body() updateUserDto: CreateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+  @Delete('/delete/:id')
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
   }
