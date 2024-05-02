@@ -5,7 +5,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadDto } from './dto/upload.dto';
 import { diskStorage } from 'multer';
 import { Public } from '../auth/decorators/public.decorator';
 @Controller('upload')

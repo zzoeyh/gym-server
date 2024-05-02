@@ -31,13 +31,13 @@ export class UsersController {
   }
 
   @Get()
-  findAll(): Promise<User[]> {
-    const errorCondition = true;
+  async findAll(): Promise<User[]> {
+    const list = await this.usersService.findAll();
 
-    if (errorCondition) {
+    if (!list) {
       throw new NotFoundException('Item not found');
     }
-    return this.usersService.findAll();
+    return list;
   }
 
   @Get('/id/:id')

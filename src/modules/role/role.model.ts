@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { Table, Column, Model, HasMany } from 'sequelize-typescript';
 import { User } from '../users/user.model';
-
 @Table({
   tableName: 'role',
 })

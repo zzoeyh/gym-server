@@ -4,6 +4,11 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { RoleModule } from './modules/role/role.module';
+import { VenueModule } from './modules/venue/venue.module';
+import { UserVenueModule } from './modules/user.venue/user.venue.module';
+import { EquipmentModule } from './modules/equipment/equipment.module';
+import { RaceModule } from './modules/race/race.module';
+import { RaceEquipmentModule } from './modules/race.equipment/race.equipment.module';
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -20,6 +25,12 @@ import { RoleModule } from './modules/role/role.module';
     UsersModule,
     RoleModule,
     UploadModule,
+    VenueModule,
+    UserVenueModule,
+
+    EquipmentModule,
+    RaceModule,
+    RaceEquipmentModule,
   ],
 })
 export class AppModule {}
