@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   // NotFoundException,
 } from '@nestjs/common';
@@ -57,5 +58,18 @@ export class EquipmentController {
     @Body() updateEquipmentDto: CreateEquipmentDto,
   ) {
     return this.equipmentService.update(id, updateEquipmentDto);
+  }
+
+  @Public()
+  @Get('/paginate')
+  async paginate(
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+  ): Promise<{ data: Equipment[]; total: number }> {
+    const result = await this.equipmentService.paginate({ current, pageSize });
+    return {
+      data: result.data,
+      total: result.total,
+    };
   }
 }

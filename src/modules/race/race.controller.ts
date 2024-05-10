@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   // NotFoundException,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { CreateRaceDto } from './dto/race.dto';
 import { Race } from './race.model';
 import { RaceService } from './race.service';
 import { RaceEquipmentService } from '../race.equipment/race.equipment.service';
+import { Public } from '../auth/decorators/public.decorator';
 @Controller('race')
 export class RaceController {
   constructor(
@@ -50,5 +52,18 @@ export class RaceController {
   @Put('/update/:id') // 使用 PUT 请求来处理更新用户信息
   update(@Param('id') id: number, @Body() updateRaceDto: CreateRaceDto) {
     return this.raceService.update(id, updateRaceDto);
+  }
+
+  @Public()
+  @Get('paginate')
+  async paginate(
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+  ): Promise<{ data: Race[]; total: number }> {
+    const result = await this.raceService.paginate({ current, pageSize });
+    return {
+      data: result.data,
+      total: result.total,
+    };
   }
 }

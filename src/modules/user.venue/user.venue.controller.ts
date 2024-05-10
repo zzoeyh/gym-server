@@ -54,4 +54,23 @@ export class UserVenueController {
     console.log(id);
     return this.venueService.cancelBook(id);
   }
+
+  @Post('/paginate')
+  async getUserVenuePage(
+    @Req() request,
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+  ): Promise<{ data: UserVenue[]; total: number }> {
+    const user = request.user; // 从请求对象中获取用户信息，包括 createId
+    const createId = user.sub; // 获取 createId
+    const result = await this.venueService.paginateUserBookVenue({
+      createId,
+      current,
+      pageSize,
+    });
+    return {
+      data: result.data,
+      total: result.total,
+    };
+  }
 }

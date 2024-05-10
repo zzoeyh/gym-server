@@ -8,12 +8,11 @@ import {
 } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 import { User } from '../users/user.model';
-import { Venue } from '../venue/venue.model';
-
+import { Equipment } from '../equipment/equipment.model';
 @Table({
-  tableName: 'user_venue',
+  tableName: 'user_equipment',
 })
-export class UserVenue extends Model {
+export class UserEquipment extends Model {
   @AutoIncrement
   @Column({ primaryKey: true, allowNull: false, type: DataTypes.INTEGER })
   id: number;
@@ -23,26 +22,22 @@ export class UserVenue extends Model {
   createId: string;
 
   @Column
-  @ForeignKey(() => Venue)
-  vid: string;
+  @ForeignKey(() => Equipment)
+  eid: string;
 
-  @BelongsTo(() => Venue)
-  venue: Venue;
+  @BelongsTo(() => Equipment)
+  equipment: Equipment;
   @Column
-  beginAt: Date;
-
-  @Column
-  endAt: Date;
+  borrow: number;
 
   @Column
-  status: number;
-
-  @Column
-  type: number;
+  damage: number;
 
   @Column
   createdAt: Date;
 
   @Column
   updatedAt: Date;
+  @Column
+  status: number;
 }

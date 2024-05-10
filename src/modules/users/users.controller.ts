@@ -7,6 +7,8 @@ import {
   Post,
   NotFoundException,
   Put,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.model';
@@ -48,21 +50,24 @@ export class UsersController {
     }
     return this.usersService.findOne(id);
   }
+  @Public()
   @Get('/name/:username')
   async findOneByUsername(@Param('username') username: string): Promise<User> {
-    const user = await this.usersService.findOneByUsername(username);
+    const user = await this.usersService.findOneByUsernameExpectPwd(username);
     if (!user) {
       throw new NotFoundException(`用户 ${username} 不存在`);
     }
     return user;
   }
-  @Get('/detail/:id')
-  async getUserDetail(@Param('id') id: string): Promise<User> {
-    const user = await this.usersService.getUserDetail(id);
+  @Get('/detail')
+  async getUserDetail(@Req() request): Promise<User> {
+    const user = request.user; // 从请求对象中获取用户信息，包括 createId
+    const createId = user.sub; // 获取 createId
+    const currentUser = await this.usersService.getUserDetail(createId);
     if (!user) {
-      throw new NotFoundException(`用户 ${id} 不存在`);
+      throw new NotFoundException(`用户 ${createId} 不存在`);
     }
-    return user;
+    return currentUser;
   }
 
   @ApiOperation({ summary: 'Update user information' }) // 为方法添加操作介绍
@@ -78,5 +83,17 @@ export class UsersController {
   @Delete('/delete/:id')
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
+  }
+
+  @Get('paginate')
+  async paginate(
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+  ): Promise<{ data: User[]; total: number }> {
+    const result = await this.usersService.paginate({ current, pageSize });
+    return {
+      data: result.data,
+      total: result.total,
+    };
   }
 }

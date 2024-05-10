@@ -4,9 +4,11 @@ import {
   ForeignKey,
   Model,
   Table,
+  HasOne,
 } from 'sequelize-typescript';
 import { DataTypes } from 'sequelize';
 import { User } from '../users/user.model';
+import { VenuePrice } from '../venue.price/venue.price.model';
 @Table({
   tableName: 'venue',
 })
@@ -41,6 +43,6 @@ export class Venue extends Model {
   @Column
   updatedAt: Date;
 
-  // @HasOne(() => UserVenue, { foreignKey: 'id' })
-  // userVenue: any;
+  @HasOne(() => VenuePrice, { foreignKey: 'vid' })
+  price: number;
 }

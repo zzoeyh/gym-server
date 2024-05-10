@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateVenuePriceDto } from './dto/venue-price.dto';
 import { VenuePrice } from './venue.price.model';
@@ -39,7 +39,28 @@ export class VenuePriceService {
     });
   }
   async remove(id: number): Promise<void> {
-    const venue = await this.findOne(id);
+    const venue = await this.venuePriceModel.findOne({
+      where: {
+        vid: id,
+      },
+    });
     await venue.destroy();
+  }
+
+  async updateVenuePrice(id: number, price: number): Promise<void> {
+    try {
+      const venuePrice = await this.venuePriceModel.findOne({
+        where: {
+          vid: id,
+        },
+      });
+      if (!venuePrice) {
+        throw new NotFoundException('VenuePrice not found');
+      }
+      await venuePrice.update({ price });
+    } catch (error) {
+      // 在这里可以根据具体情况抛出自定义的异常
+      throw new NotFoundException('更新信息失败，请检查输入的字段');
+    }
   }
 }

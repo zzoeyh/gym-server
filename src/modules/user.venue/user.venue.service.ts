@@ -6,6 +6,7 @@ import {
 } from './dto/create-user-venue.dto';
 import { UserVenue } from './user.venue.model';
 import { Op } from 'sequelize';
+import { Venue } from '../venue/venue.model';
 
 @Injectable()
 export class UserVenueService {
@@ -13,7 +14,7 @@ export class UserVenueService {
     @InjectModel(UserVenue)
     private readonly userVenueModel: typeof UserVenue,
   ) {}
-
+  // 1为预约 0为取消 2为使用
   create(createUserVenueDto: CreateUserVenueDto): Promise<UserVenue> {
     return this.userVenueModel.create({
       vid: createUserVenueDto.vid,
@@ -21,7 +22,7 @@ export class UserVenueService {
       endAt: createUserVenueDto.endAt,
       type: createUserVenueDto.type,
       createId: createUserVenueDto.createId,
-      status: 0,
+      status: 1,
     });
   }
 
@@ -85,6 +86,64 @@ export class UserVenueService {
       }
     } catch (error) {
       console.error('Error updating status:', error); // 输出错误信息
+    }
+  }
+  /**
+   *获取某个用户预定场地
+   */
+  async getUserBookVenue(createId: string): Promise<UserVenue[]> {
+    try {
+      const userVenues = await UserVenue.findAll({
+        where: {
+          createId,
+        },
+        include: [
+          {
+            model: Venue,
+            attributes: ['name'],
+            as: 'venue',
+          },
+        ],
+      });
+
+      return userVenues;
+    } catch (error) {
+      // 在这里可以根据具体情况抛出自定义的异常
+      throw new Error('查询预定场地数据失败');
+    }
+  }
+
+  async paginateUserBookVenue({
+    createId,
+    current = 1,
+    pageSize = 10,
+  }): Promise<{ data: UserVenue[]; total: number }> {
+    try {
+      const offset = (current - 1) * pageSize;
+      const limit = pageSize * 1;
+
+      const { count, rows } = await UserVenue.findAndCountAll({
+        where: {
+          createId,
+        },
+        include: [
+          {
+            model: Venue,
+            attributes: ['name'],
+            as: 'venue',
+          },
+        ],
+        offset,
+        limit,
+      });
+
+      return {
+        data: rows,
+        total: count,
+      };
+    } catch (error) {
+      // 在这里可以根据具体情况抛出自定义的异常
+      throw new Error('分页查询预定场地数据失败');
     }
   }
 }

@@ -7,11 +7,14 @@ import {
   Post,
   NotFoundException,
   Req,
+  Query,
+  Put,
 } from '@nestjs/common';
 import { VenueDto } from './dto/venue.dto';
 import { Venue } from './venue.model';
 import { VenueService } from './venue.service';
 import { VenuePriceService } from '../venue.price/venue.price.service';
+import { Public } from '../auth/decorators/public.decorator';
 @Controller('venue')
 export class VenueController {
   constructor(
@@ -44,6 +47,7 @@ export class VenueController {
     return createVenuePromise;
   }
 
+  @Public()
   @Get('get')
   findAll(): Promise<Venue[]> {
     // const errorCondition = true;
@@ -62,7 +66,7 @@ export class VenueController {
     }
     return this.venueService.findOne(id);
   }
-  @Get(':name')
+  @Get('/name/:name')
   async findOneByName(@Param('name') name: string): Promise<Venue> {
     const venue = await this.venueService.findOneByName(name);
     if (!venue) {
@@ -72,6 +76,25 @@ export class VenueController {
   }
   @Delete(':id')
   remove(@Param('id') id: number): Promise<void> {
+    this.venuePriceService.remove(id);
     return this.venueService.remove(id);
+  }
+  @Put('/update/:id') // 使用 PUT 请求来处理更新用户信息
+  update(@Param('id') id: number, @Body() updateVenueDto: VenueDto) {
+    this.venuePriceService.updateVenuePrice(id, updateVenueDto.price);
+    return this.venueService.update(id, updateVenueDto);
+  }
+
+  @Public()
+  @Get('paginate')
+  async paginate(
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+  ): Promise<{ data: Venue[]; total: number }> {
+    const result = await this.venueService.paginate({ current, pageSize });
+    return {
+      data: result.data,
+      total: result.total,
+    };
   }
 }

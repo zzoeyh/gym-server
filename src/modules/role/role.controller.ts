@@ -10,16 +10,17 @@ import {
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Role } from './role.model';
 import { RoleService } from './role.service';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
-  @Post()
+  @Post('/create')
   create(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.roleService.create(createRoleDto);
   }
-
+  @Public()
   @Get()
   findAll(): Promise<Role[]> {
     const errorCondition = true;

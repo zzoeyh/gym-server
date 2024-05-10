@@ -39,6 +39,17 @@ export class UsersService {
       },
     });
   }
+
+  findOneByUsernameExpectPwd(username: string): Promise<User> {
+    return this.userModel.findOne({
+      where: {
+        username,
+      },
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'password'], // 显式排除 createdAt 和 updatedAt 字段
+      },
+    });
+  }
   /**
    * 查询detail
    **/
@@ -80,5 +91,22 @@ export class UsersService {
     } else {
       return String(Number(userList[userList.length - 1].id) + 1);
     }
+  }
+  async paginate({
+    current = 1,
+    pageSize = 10,
+  }): Promise<{ data: User[]; total: number }> {
+    const offset = (current - 1) * pageSize;
+    const limit = pageSize * 1;
+
+    const { count, rows } = await this.userModel.findAndCountAll({
+      offset,
+      limit,
+    });
+
+    return {
+      data: rows,
+      total: count,
+    };
   }
 }

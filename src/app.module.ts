@@ -7,6 +7,7 @@ import { RoleModule } from './modules/role/role.module';
 import { VenueModule } from './modules/venue/venue.module';
 import { UserVenueModule } from './modules/user.venue/user.venue.module';
 import { EquipmentModule } from './modules/equipment/equipment.module';
+import { UserEquipmentModule } from './modules/user.equipment/user.equipment.module';
 import { RaceModule } from './modules/race/race.module';
 import { RaceEquipmentModule } from './modules/race.equipment/race.equipment.module';
 @Module({
@@ -29,6 +30,7 @@ import { RaceEquipmentModule } from './modules/race.equipment/race.equipment.mod
     UserVenueModule,
 
     EquipmentModule,
+    UserEquipmentModule,
     RaceModule,
     RaceEquipmentModule,
   ],

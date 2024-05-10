@@ -76,4 +76,22 @@ export class RaceService {
       throw new NotFoundException('更新用户信息失败,请检查输入的字段');
     }
   }
+
+  async paginate({
+    current = 1,
+    pageSize = 10,
+  }): Promise<{ data: Race[]; total: number }> {
+    const offset = (current - 1) * pageSize;
+    const limit = pageSize * 1;
+
+    const { count, rows } = await this.raceModel.findAndCountAll({
+      offset,
+      limit,
+    });
+
+    return {
+      data: rows,
+      total: count,
+    };
+  }
 }

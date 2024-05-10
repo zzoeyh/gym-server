@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateEquipmentDto, RepairDto } from './dto/create-equipment.dto';
 import { Equipment } from './equipment.model';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class EquipmentService {
@@ -10,19 +11,30 @@ export class EquipmentService {
     private readonly equipmentModel: typeof Equipment,
   ) {}
 
-  create(createEquipmentDto: CreateEquipmentDto): Promise<Equipment> {
-    return this.equipmentModel.create({
-      name: createEquipmentDto.name,
-      createId: createEquipmentDto.createId,
-      parentId: createEquipmentDto.parentId,
-      total: createEquipmentDto.total || 0,
-      available: createEquipmentDto.total || 0,
-      price: createEquipmentDto.price || 0,
-    });
+  async create(createEquipmentDto: CreateEquipmentDto): Promise<Equipment> {
+    const eq = await this.findOneByName(createEquipmentDto.name);
+    if (eq) {
+      throw new HttpException('已有该器材，请重新创建', 201);
+    } else {
+      return this.equipmentModel.create({
+        name: createEquipmentDto.name,
+        createId: createEquipmentDto.createId,
+        parentId: createEquipmentDto.parentId,
+        total: createEquipmentDto.total || 0,
+        available: createEquipmentDto.total || 0,
+        price: createEquipmentDto.price || 0,
+      });
+    }
   }
 
   async findAll(): Promise<Equipment[]> {
-    return this.equipmentModel.findAll();
+    return this.equipmentModel.findAll({
+      where: {
+        parentId: {
+          [Op.ne]: 0, // 排除 parentId 为 0 的数据
+        },
+      },
+    });
   }
 
   findOne(id: number): Promise<Equipment> {
@@ -91,5 +103,27 @@ export class EquipmentService {
       // 在这里可以根据具体情况抛出自定义的异常
       throw new NotFoundException('更新用户信息失败,请检查输入的字段');
     }
+  }
+  async paginate({
+    current = 1,
+    pageSize = 10,
+  }): Promise<{ data: Equipment[]; total: number }> {
+    const offset = (current - 1) * pageSize;
+    const limit = pageSize * 1;
+
+    const { count, rows } = await this.equipmentModel.findAndCountAll({
+      where: {
+        parentId: {
+          [Op.ne]: 0, // 排除 parentId 为 0 的数据
+        },
+      },
+      offset,
+      limit,
+    });
+
+    return {
+      data: rows,
+      total: count,
+    };
   }
 }
