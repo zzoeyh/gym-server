@@ -80,6 +80,7 @@ export class UsersController {
   update(@Param('id') id: string, @Body() updateUserDto: CreateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
+
   @Delete('/delete/:id')
   remove(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);

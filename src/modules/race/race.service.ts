@@ -94,4 +94,26 @@ export class RaceService {
       total: count,
     };
   }
+
+  async paginateForUser({
+    current = 1,
+    pageSize = 10,
+    id,
+  }): Promise<{ data: Race[]; total: number }> {
+    const offset = (current - 1) * pageSize;
+    const limit = pageSize * 1;
+
+    const { count, rows } = await this.raceModel.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        id,
+      },
+    });
+
+    return {
+      data: rows,
+      total: count,
+    };
+  }
 }

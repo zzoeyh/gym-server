@@ -22,7 +22,7 @@ export class RoleService {
     return this.roleModel.findAll();
   }
 
-  findOne(id: string): Promise<Role> {
+  findOne(id: number): Promise<Role> {
     return this.roleModel.findOne({
       where: {
         id,
@@ -37,7 +37,7 @@ export class RoleService {
       },
     });
   }
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     const role = await this.findOne(id);
     await role.destroy();
   }

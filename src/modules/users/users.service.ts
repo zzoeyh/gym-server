@@ -17,6 +17,7 @@ export class UsersService {
       id,
       username: createUserDto.username,
       password: createUserDto.password,
+      rid: createUserDto.rid,
     });
   }
 

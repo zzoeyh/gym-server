@@ -66,4 +66,24 @@ export class RaceController {
       total: result.total,
     };
   }
+
+  @Get('paginate/user')
+  async paginateForUser(
+    @Query('current') current,
+    @Query('pageSize') pageSize,
+    @Req() request,
+  ): Promise<{ data: Race[]; total: number }> {
+    const user = request.user; // 从请求对象中获取用户信息，包括 createId
+    const createId = user.sub; // 获取 createId
+    // 将 createId 添加到 createVenueDto 中
+    const result = await this.raceService.paginateForUser({
+      id: createId,
+      current,
+      pageSize,
+    });
+    return {
+      data: result.data,
+      total: result.total,
+    };
+  }
 }

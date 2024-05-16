@@ -20,19 +20,15 @@ export class RoleController {
   create(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.roleService.create(createRoleDto);
   }
+
   @Public()
   @Get()
   findAll(): Promise<Role[]> {
-    const errorCondition = true;
-
-    if (errorCondition) {
-      throw new NotFoundException('Item not found');
-    }
     return this.roleService.findAll();
   }
 
   @Get('/get/:id')
-  async findOne(@Param('id') id: string): Promise<Role> {
+  async findOne(@Param('id') id: number): Promise<Role> {
     const role = await this.roleService.findOne(id);
     if (!role) {
       throw new NotFoundException(`角色不存在`);
@@ -48,7 +44,7 @@ export class RoleController {
     return this.roleService.findOneByName(name);
   }
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: number): Promise<void> {
     return this.roleService.remove(id);
   }
 }
